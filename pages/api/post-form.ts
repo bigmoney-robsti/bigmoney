@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
+import { format, parseISO } from "date-fns";
 
 type Data = {
   success: boolean;
@@ -12,7 +13,6 @@ export default function handler(
 ) {
   // Get the form data from the request body
   const formData = req.body;
-
   // Check if the username directory exists
   if (!fs.existsSync(`c:/Users/${formData.username}`)) {
     throw new Error(`Username directory does not exist: ${formData.username}`);
@@ -23,7 +23,7 @@ export default function handler(
   });
   // Save the form data to a file
   fs.writeFileSync(
-    `c:/Users/${formData.username}/source/form-submissions/form-submissions.json`,
+    `c:/Users/${formData.username}/source/form-submissions/form-submission-${format(parseISO(formData.date), "dd-mm-yyyy-H-s")}.json`,
     JSON.stringify(formData, null, 2)
   );
 

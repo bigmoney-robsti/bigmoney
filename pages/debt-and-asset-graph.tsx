@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
-import Chart from "chart.js/auto";
-
-type FormData = {
-  username: string;
-  debt: number;
-  assets: number;
-  timestamp: number;
-};
+import Chart from "chart.js/auto";//todo - dont use auto, the package size is huge
+import { format, parseISO } from "date-fns";
+import { FormData } from "./../types/FormData";
 
 export default function DebtAndAssetLineGraph() {
   // Use the useState hook to store the form data in a state variable
   const [formData, setFormData] = useState<FormData[]>([]);
+  const [chart, setChart] = useState<Chart | null>(null);
 
   // Use the useEffect hook to read the form submissions from the file system
   // and update the formData state variable
@@ -19,8 +15,7 @@ export default function DebtAndAssetLineGraph() {
     fetch("/api/get-forms")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setFormData([data.forms]);
+        setFormData(data);
       });
   }, []);
 
@@ -30,12 +25,19 @@ export default function DebtAndAssetLineGraph() {
       // Get the canvas element where the line graph will be rendered
       const canvas = document.getElementById("line-graph") as HTMLCanvasElement;
       // Get the context of the canvas element
-      const graphArea = canvas.getContext("2d") as CanvasRenderingContext2D;
+      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+      
+      chart?.destroy();
+
+      formData.forEach((d) => {
+        d.date = format(parseISO(d.date as string), "ss");
+      });
+      
       // Create a new Chart instance
-      let chart = new Chart(graphArea, {
+      setChart(new Chart(context, {
         type: "line",
         data: {
-          labels: formData.map((d) => d.timestamp),
+          labels: formData.map((d) => d.date),
           datasets: [
             {
               label: "Debt",
@@ -57,7 +59,7 @@ export default function DebtAndAssetLineGraph() {
           responsive: true,
           maintainAspectRatio: false,
         },
-      });
+      }));
     }
   }, [formData]);
 

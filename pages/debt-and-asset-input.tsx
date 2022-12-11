@@ -1,16 +1,12 @@
 import { useState } from "react";
-
-type FormData = {
-  username: string;
-  debt: number;
-  assets: number;
-};
+import { FormData } from "./../types/FormData";
 
 export default function Index() {
   const [formData, setFormData] = useState<FormData>({
     username: "",
     debt: 0,
     assets: 0,
+    date: null
   });
 
   function handleSubmit(
@@ -20,12 +16,12 @@ export default function Index() {
     event.preventDefault();
 
     //Send the form data to the API
-    fetch("/api/form-submission", {
+    fetch("/api/post-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({...formData, date: new Date()}),
     })
       .then((response) => response.json())
       .then((data) => console.log(data));
