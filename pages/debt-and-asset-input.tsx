@@ -1,12 +1,14 @@
+import AssetList from "components/AssetList";
+import DebtList from "components/DebtList";
 import { useState } from "react";
-import { FormData } from "./../types/FormData";
+import { FormData } from "types/FormData";
 
 export default function Index() {
   const [formData, setFormData] = useState<FormData>({
     username: "",
     debt: 0,
     assets: 0,
-    date: null
+    date: null,
   });
 
   function handleSubmit(
@@ -21,7 +23,7 @@ export default function Index() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({...formData, date: new Date()}),
+      body: JSON.stringify({ ...formData, date: new Date() }),
     })
       .then((response) => response.json())
       .then((data) => console.log(data));
@@ -57,9 +59,7 @@ export default function Index() {
         }
       />
       <button type="submit">Submit</button>
+      <AssetList />
     </form>
   );
 }
-
-
-
